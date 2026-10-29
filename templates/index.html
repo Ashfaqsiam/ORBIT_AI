@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ORBIT | AI Desktop Assistant</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="bg-container"></div>
+
+    <!-- LOGIN / REGISTER SCREEN -->
+    <div id="login-screen" class="auth-wrapper">
+        <div class="auth-left">
+            <h3 class="brand-logo">✦ O R B I T</h3>
+            <div class="auth-welcome-text">
+                <h1>Your personal AI companion</h1>
+                <p>Think smarter. Create faster. Do more.</p>
+            </div>
+            <div class="auth-features">VOICE  •  CHAT  •  PRODUCTIVITY</div>
+        </div>
+
+        <div class="glass-card auth-form-card">
+            <!-- LOGIN FORM -->
+            <div id="form-login">
+                <h2 id="auth-heading">Welcome back</h2>
+                <p class="sub-text">Sign in to continue to your workspace</p>
+                
+                <div class="input-group">
+                    <label>USERNAME</label>
+                    <input type="text" id="login-user" placeholder="Enter your username" class="glass-input">
+                </div>
+                
+                <div class="input-group">
+                    <label>PASSWORD</label>
+                    <input type="password" id="login-pass" placeholder="Enter your password" class="glass-input">
+                </div>
+                
+                <p id="auth-error" style="color: #FB7185; font-size: 12px; margin-bottom: 10px;"></p>
+                <button class="primary-btn full-width" onclick="handleLogin()">Sign In &rarr;</button>
+                
+                <div class="auth-footer-link" style="margin-top: 15px; text-align: center;">
+                    <span>New to ORBIT?</span> <a href="#" onclick="toggleAuthMode(true)" style="color: #39FF88;">Create account</a>
+                </div>
+            </div>
+
+            <!-- REGISTER FORM -->
+            <div id="form-register" style="display: none;">
+                <h2>Create Account</h2>
+                <p class="sub-text">Join ORBIT to save your chat history</p>
+                
+                <div class="input-group">
+                    <label>CHOOSE USERNAME</label>
+                    <input type="text" id="reg-user" placeholder="Choose a username" class="glass-input">
+                </div>
+                
+                <div class="input-group">
+                    <label>CHOOSE PASSWORD</label>
+                    <input type="password" id="reg-pass" placeholder="Choose a password" class="glass-input">
+                </div>
+                
+                <p id="reg-error" style="color: #FB7185; font-size: 12px; margin-bottom: 10px;"></p>
+                <button class="primary-btn full-width" onclick="handleRegister()">Register &rarr;</button>
+                
+                <div class="auth-footer-link" style="margin-top: 15px; text-align: center;">
+                    <span>Already have an account?</span> <a href="#" onclick="toggleAuthMode(false)" style="color: #39FF88;">Sign In</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DASHBOARD SCREEN -->
+    <div id="dashboard-screen" class="app-layout" style="display: none;">
+        <aside class="sidebar">
+            <div class="brand">
+                <h2>◉ ORBIT</h2>
+                <span>AI DESKTOP ASSISTANT</span>
+                <span class="lang-badge" id="sidebar-lang-label">LANGUAGE • ENGLISH</span>
+            </div>
+            <nav class="nav-links">
+                <button class="nav-btn active" onclick="switchTab('home')">⌂ Home</button>
+                <button class="nav-btn" onclick="startNewChat()">＋ New Chat</button>
+                <button class="nav-btn" onclick="loadChatHistory()">◷ Chat History</button>
+                <button class="nav-btn" onclick="showFavorites()">☆ Favorites</button>
+                <button class="nav-btn" onclick="showSettings()">⚙ Settings</button>
+            </nav>
+            <div class="sidebar-footer">
+                <button class="nav-btn logout" onclick="showLogin()">↪ Sign out</button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <h1 id="page-title">Home</h1>
+                <div class="status-indicators">
+                    <span class="local-ai">● LOCAL AI</span>
+                    <span class="username" id="display-user">◉ Ashfaq</span>
+                </div>
+            </header>
+
+            <div class="dashboard-body" id="main-body-content">
+                <!-- HOME VIEW -->
+                <div id="home-view">
+                    <div class="glass-card hero-card">
+                        <div class="hero-text">
+                            <span class="tag">YOUR VOICE. YOUR AI.</span>
+                            <h2 id="welcome-msg">Hello, Ashfaq 👋</h2>
+                            <p>What would you like to do today?</p>
+                        </div>
+                        <div class="ai-orb-container">
+                            <div class="orb"></div>
+                        </div>
+                    </div>
+
+                    <div class="grid-row">
+                        <div class="glass-card voice-card">
+                            <span class="card-title">VOICE ASSISTANT</span>
+                            <h3>Speak naturally</h3>
+                            <p>Tap the microphone and speak</p>
+                            <div class="mic-orb" id="mic-btn" onclick="startPythonVoice()">🎙️</div>
+                            <div class="voice-wave" id="voice-wave" style="display: none;">
+                                <span class="wave-bar"></span>
+                                <span class="wave-bar"></span>
+                                <span class="wave-bar"></span>
+                                <span class="wave-bar"></span>
+                                <span class="wave-bar"></span>
+                            </div>
+                            <span class="status-text" id="voice-status">● Voice ready • Click mic to speak</span>
+                        </div>
+
+                        <div class="glass-card prompts-card">
+                            <span class="card-title">QUICK PROMPTS</span>
+                            <button class="prompt-btn" onclick="putPrompt('Explain a difficult CSE concept in simple words.')">✧ Explain a concept</button>
+                            <button class="prompt-btn" onclick="putPrompt('Help me understand and debug my code.')">⌘ Help me with code</button>
+                            <button class="prompt-btn" onclick="putPrompt('Open downloads folder')">📁 Open downloads folder</button>
+                        </div>
+                    </div>
+
+                    <div class="glass-card chat-card">
+                        <h3>CHAT WITH ORBIT</h3>
+                        <div id="chat-log" class="chat-log">
+                            <p><strong>ORBIT •</strong> Hello! I'm your AI assistant. Ask me anything.</p>
+                        </div>
+                        <div class="chat-input-row">
+                            <input type="text" id="message-input" placeholder="Message ORBIT..." class="glass-input" onkeypress="checkEnter(event)">
+                            <button class="send-btn" onclick="sendMessage()">➤</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DYNAMIC CONTENT VIEW -->
+                <div id="dynamic-view" style="display: none;"></div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let currentSessionId = null;
+        let loggedInUser = "Ashfaq";
+
+        function toggleAuthMode(isRegister) {
+            document.getElementById('form-login').style.display = isRegister ? 'none' : 'block';
+            document.getElementById('form-register').style.display = isRegister ? 'block' : 'none';
+        }
+
+        async function handleLogin() {
+            const username = document.getElementById('login-user').value.trim();
+            const password = document.getElementById('login-pass').value.trim();
+            const errEl = document.getElementById('auth-error');
+
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    loggedInUser = data.username;
+                    enterDashboard(loggedInUser);
+                } else {
+                    errEl.innerText = data.error || "Login failed";
+                }
+            } catch (err) {
+                errEl.innerText = "Connection error";
+            }
+        }
+
+        async function handleRegister() {
+            const username = document.getElementById('reg-user').value.trim();
+            const password = document.getElementById('reg-pass').value.trim();
+            const errEl = document.getElementById('reg-error');
+
+            try {
+                const res = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    alert("Account created successfully! Please sign in.");
+                    toggleAuthMode(false);
+                    document.getElementById('login-user').value = username;
+                } else {
+                    errEl.innerText = data.error || "Registration failed";
+                }
+            } catch (err) {
+                errEl.innerText = "Connection error";
+            }
+        }
+
+        function enterDashboard(username) {
+            document.getElementById('display-user').innerText = '◉ ' + username;
+            document.getElementById('welcome-msg').innerText = 'Hello, ' + username + ' 👋';
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('dashboard-screen').style.display = 'flex';
+            loadSettingsMode();
+            startNewChat();
+        }
+
+        function showLogin() {
+            document.getElementById('dashboard-screen').style.display = 'none';
+            document.getElementById('login-screen').style.display = 'flex';
+        }
+
+        function switchTab(tab) {
+            document.getElementById('page-title').innerText = "Home";
+            document.getElementById('home-view').style.display = 'block';
+            document.getElementById('dynamic-view').style.display = 'none';
+        }
+
+        async function startNewChat() {
+            switchTab('home');
+            try {
+                const res = await fetch('/api/sessions/new', { method: 'POST' });
+                const data = await res.json();
+                currentSessionId = data.session_id;
+                document.getElementById('chat-log').innerHTML = `<p><strong>ORBIT •</strong> New chat started. Ask me anything.</p>`;
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function loadChatHistory() {
+            document.getElementById('page-title').innerText = "Chat History";
+            document.getElementById('home-view').style.display = 'none';
+            const dynView = document.getElementById('dynamic-view');
+            dynView.style.display = 'block';
+            dynView.innerHTML = `<p style="color:#9CB0CE;">Loading history...</p>`;
+
+            try {
+                const res = await fetch('/api/sessions');
+                const sessions = await res.json();
+                if (sessions.length === 0) {
+                    dynView.innerHTML = `<div class="glass-card"><h3>No conversations yet</h3><p>Start a new chat to see it listed here.</p></div>`;
+                    return;
+                }
+
+                let html = `<div class="glass-card" style="display:flex; flex-direction:column; gap:10px;"><h3>Saved Conversations</h3>`;
+                sessions.forEach(s => {
+                    html += `
+                        <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(3,7,14,0.5); padding:12px; border-radius:10px; border:1px solid #183F72;">
+                            <div>
+                                <strong style="color:#F3F7FF;">${s.title}</strong>
+                                <div style="font-size:11px; color:#9CB0CE;">Updated: ${s.updated_at}</div>
+                            </div>
+                            <button class="primary-btn" onclick="openSession(${s.id})" style="padding:6px 14px; font-size:12px;">Open</button>
+                        </div>`;
+                });
+                html += `</div>`;
+                dynView.innerHTML = html;
+            } catch (err) {
+                dynView.innerHTML = `<p style="color:#FB7185;">Failed to load history.</p>`;
+            }
+        }
+
+        async function openSession(sid) {
+            currentSessionId = sid;
+            switchTab('home');
+            const chatLog = document.getElementById('chat-log');
+            chatLog.innerHTML = `<p>Loading conversation...</p>`;
+            try {
+                const res = await fetch(`/api/session/${sid}/messages`);
+                const messages = await res.json();
+                chatLog.innerHTML = "";
+                messages.forEach(m => {
+                    let who = m.role === 'user' ? 'YOU' : 'ORBIT';
+                    chatLog.innerHTML += `<p><strong>${who} •</strong> ${m.content}</p>`;
+                });
+                chatLog.scrollTop = chatLog.scrollHeight;
+            } catch (err) {
+                chatLog.innerHTML = `<p style="color:#FB7185;">Failed to load messages.</p>`;
+            }
+        }
+
+        function showFavorites() {
+            document.getElementById('page-title').innerText = "Favorites";
+            document.getElementById('home-view').style.display = 'none';
+            const dynView = document.getElementById('dynamic-view');
+            dynView.style.display = 'block';
+            dynView.innerHTML = `<div class="glass-card"><h3>Favorites</h3><p style="color:#9CB0CE;">Your saved prompts and answers will appear here.</p></div>`;
+        }
+
+        async function showSettings() {
+            document.getElementById('page-title').innerText = "Settings";
+            document.getElementById('home-view').style.display = 'none';
+            const dynView = document.getElementById('dynamic-view');
+            dynView.style.display = 'block';
+
+            let currentMode = "English";
+            try {
+                const res = await fetch('/api/settings');
+                const data = await res.json();
+                currentMode = data.language_mode || "English";
+            } catch(e) {}
+
+            dynView.innerHTML = `
+                <div class="glass-card" style="display:flex; flex-direction:column; gap:20px;">
+                    <h3>Assistant Settings</h3>
+                    <div style="display:flex; flex-direction:column; gap:8px;">
+                        <label style="color:#F3F7FF; font-weight:bold;">Response Language Mode</label>
+                        <p style="color:#9CB0CE; font-size:13px;">Choose whether ORBIT should reply in English or Bangla.</p>
+                        <select id="lang-select" class="glass-input" style="max-width:300px; padding:10px; background:rgba(3,7,14,0.7); color:#fff; border:1px solid #183F72; border-radius:8px;">
+                            <option value="English" ${currentMode === 'English' ? 'selected' : ''}>English</option>
+                            <option value="Bangla" ${currentMode === 'Bangla' ? 'selected' : ''}>Bangla (বাংলা)</option>
+                        </select>
+                    </div>
+                    <button class="primary-btn" onclick="saveSettings()" style="max-width:150px; padding:10px;">Save Settings</button>
+                    <p id="settings-msg" style="color:#39FF88; font-size:13px;"></p>
+                </div>`;
+        }
+
+        async function saveSettings() {
+            const mode = document.getElementById('lang-select').value;
+            const msgEl = document.getElementById('settings-msg');
+            try {
+                const res = await fetch('/api/settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ language_mode: mode })
+                });
+                if (res.ok) {
+                    document.getElementById('sidebar-lang-label').innerText = "LANGUAGE • " + mode.toUpperCase();
+                    msgEl.innerText = "Settings saved successfully!";
+                    setTimeout(() => msgEl.innerText = "", 3000);
+                } else {
+                    msgEl.style.color = "#FB7185";
+                    msgEl.innerText = "Failed to save settings.";
+                }
+            } catch(e) {
+                msgEl.style.color = "#FB7185";
+                msgEl.innerText = "Connection error.";
+            }
+        }
+
+        async function loadSettingsMode() {
+            try {
+                const res = await fetch('/api/settings');
+                const data = await res.json();
+                const mode = data.language_mode || "English";
+                document.getElementById('sidebar-lang-label').innerText = "LANGUAGE • " + mode.toUpperCase();
+            } catch(e) {}
+        }
+
+        function putPrompt(text) {
+            document.getElementById('message-input').value = text;
+            document.getElementById('message-input').focus();
+        }
+
+        function checkEnter(event) {
+            if (event.key === 'Enter') sendMessage();
+        }
+
+        async function startPythonVoice() {
+            document.getElementById('voice-status').innerText = "◉ Listening... Speak now";
+            document.getElementById('mic-btn').style.background = "rgba(57, 255, 136, 0.3)";
+            document.getElementById('voice-wave').style.display = 'flex';
+
+            try {
+                const response = await fetch('/api/voice', { method: 'POST' });
+                const data = await response.json();
+                
+                stopWave();
+
+                if (data.transcript) {
+                    document.getElementById('message-input').value = data.transcript;
+                    sendMessage();
+                } else if (data.error) {
+                    document.getElementById('voice-status').innerText = "⚠ " + data.error;
+                }
+            } catch (err) {
+                stopWave();
+                document.getElementById('voice-status').innerText = "⚠ Mic connection error";
+            }
+        }
+
+        function stopWave() {
+            document.getElementById('voice-status').innerText = "● Voice ready • Click mic to speak";
+            document.getElementById('mic-btn').style.background = "rgba(54, 215, 255, 0.1)";
+            document.getElementById('voice-wave').style.display = 'none';
+        }
+
+        async function sendMessage() {
+            const inputField = document.getElementById('message-input');
+            const message = inputField.value.trim();
+            if (!message) return;
+
+            const chatLog = document.getElementById('chat-log');
+            chatLog.innerHTML += `<p><strong>YOU •</strong> ${message}</p>`;
+            inputField.value = '';
+            chatLog.scrollTop = chatLog.scrollHeight;
+
+            chatLog.innerHTML += `<p id="thinking"><strong>ORBIT •</strong> Thinking...</p>`;
+            chatLog.scrollTop = chatLog.scrollHeight;
+
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: message, session_id: currentSessionId })
+                });
+
+                const data = await response.json();
+                document.getElementById('thinking')?.remove();
+
+                if (data.response) {
+                    currentSessionId = data.session_id;
+                    chatLog.innerHTML += `<p><strong>ORBIT •</strong> ${data.response}</p>`;
+                } else {
+                    chatLog.innerHTML += `<p style="color: #FB7185;"><strong>ORBIT •</strong> Error occurred.</p>`;
+                }
+                chatLog.scrollTop = chatLog.scrollHeight;
+            } catch (error) {
+                document.getElementById('thinking')?.remove();
+                chatLog.innerHTML += `<p style="color: #FB7185;"><strong>ORBIT •</strong> Connection error.</p>`;
+                chatLog.scrollTop = chatLog.scrollHeight;
+            }
+        }
+    </script>
+</body>
+</html>

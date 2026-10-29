@@ -1,0 +1,29 @@
+============================================================
+ORBIT AI DESKTOP ASSISTANT - SETUP & RUN GUIDE
+============================================================
+
+1. Prerequisites:
+   - Make sure Python 3.10 or newer is installed on your Windows system.
+   - Microphone connected for voice commands.
+   - Ollama running locally with 'qwen2.5:3b' model installed.
+
+2. Install Required Python Packages:
+   Open your terminal in the project directory and run:
+   pip install -r requirements.txt
+
+3. Folder Structure Requirement:
+   ORBIT_Wallpaper_Fixed_v4/
+   ├── main.py
+   ├── ai.py
+   ├── orbit_history.db (Auto-created)
+   ├── orbit_settings.json (Auto-created)
+   └── templates/
+       ├── index.html
+       └── style.css
+
+4. How to Run the Application:
+   Run the following command in terminal:
+   python main.py
+
+   This will automatically start the background Flask server and pop up the native ORBIT desktop application window!
+============================================================

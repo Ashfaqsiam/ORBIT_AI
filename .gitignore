@@ -1,0 +1,25 @@
+# Python cache & build files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual Environments
+venv/
+.venv/
+env/
+
+# SQLite Databases & Local Storage
+*.db
+*.sqlite
+*.sqlite3
+orbit_history.db
+
+# Local Settings & Configs
+orbit_settings.json
+
+# IDE & OS Specific Files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
